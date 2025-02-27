@@ -10,8 +10,8 @@ window.fill((25, 25, 25))
 
 class Card:
     values = np.array([])
-    card_width = 60
-    card_height = 80
+    card_width = 80
+    card_height = 100
     def __init__(self, values, x_position, y_position, is_visible):
         self.values = values
         self.x_position = x_position
@@ -34,9 +34,20 @@ def compare_if_is_set(card1, card2, card3):
     return is_set
 
     
-def mix_cards(): # TODO
-    pass
-
+def mix_cards(): # generates 3x4 matrix of 12 random different cards
+    active_cards = np.full((3, 4), Card([],0,0,False))
+    for i in range(3):
+        for j in range(4):
+            card_exists = True
+            while card_exists:
+                index = np.random.randint(0, 81)
+                if not np.any(active_cards == all_cards[index]): # card already in active_cards
+                    active_cards[i][j] = all_cards[index]
+                    all_cards[index].x_position = 30 + 100*j
+                    all_cards[index].y_position = 30 + 120*i
+                    all_cards[index].is_visible = True
+                    card_exists = False
+    return active_cards
 
 
 all_cards = []  # list of all 81 cards
@@ -48,10 +59,9 @@ for i in range(3):
 
 
 # test
-all_cards[0].x_position = 30
-all_cards[0].y_position = 30
-all_cards[0].is_visible = True
-print(all_cards[0])
+mix_cards()
+
+
 #all_cards.append(Card(np.array([1,1,2,0]), 210, 30, True))
 
 print("is set: ",compare_if_is_set(all_cards[0], all_cards[1], all_cards[2]))
@@ -72,7 +82,6 @@ while running:
                 rect = pygame.Rect(card.x_position, card.y_position, card.card_width, card.card_height)
                 if card.is_visible and rect.collidepoint(event.pos):
                     card.is_visible = False
-                    print(all_cards[0])
     window.fill((25, 25, 25))
     for card in all_cards:
         if card.is_visible:
