@@ -10,7 +10,6 @@ class Game:
         self.window_height = 600
         self.window = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("SET Trainer")
-        self.window.fill((25, 25, 25))
         self.font = pygame.font.Font(None, 36)
         self.restart_button_text = self.font.render("Restart", True, "black")
         self.text_area = self.restart_button_text.get_rect(center=(640, 400))
@@ -24,8 +23,8 @@ class Game:
 
     class Traffic_light:
         radius = 35
-        position_red = (650, 100)
-        position_green = (650, 190)
+        position_red = (645, 95)
+        position_green = (645, 195)
         def __init__(self):
             self.rect = (580, 30, 130, 230)
             self.red = (80, 0, 0)
@@ -75,7 +74,7 @@ class Game:
                     self.traffic_light.update(check_is_set(self.chosen_cards))
                     self.chosen_cards = []
 
-            self.window.fill((25, 25, 25))
+            self.window.fill((45, 45, 45))
             for card in self.all_cards:
                 if card.is_visible:
                     pygame.draw.rect(self.window, "white", (card.x_position, card.y_position, card.card_width, card.card_height))
@@ -149,51 +148,56 @@ def mix_cards(all_cards): # generates 3x4 matrix of 12 random different cards
 
 # draws attributes amount [0], shape [1], color [2], strength of color [3]
 def draw_content(card, window):
-    #color
-    strength_of_color = 255 - 87 * card.get_values()[3]
-    if card.get_values()[2] == 0: # red
-        color = (strength_of_color, 0, 0)
-    elif card.get_values()[2] == 1: # green
-        color = (0, strength_of_color, 0)
-    else: # blue
-        if card.get_values()[3] == 0:
-            color = (0,180, strength_of_color)
-        else:
-            color = (0,0, strength_of_color)
+    # filling
+    if card.get_values()[3] == 1: # no filling
+        border_width = 5
+    else:   # transparent or complete filling
+        border_width = 0
+    surface = pygame.Surface((800, 600), pygame.SRCALPHA)
+    if card.get_values()[3] == 2: # transparent
+        transparency = 100
+    else:
+        transparency = 255 
+
+    # color
+    all_colors = [(170, 0, 0, transparency), (0, 150, 0, transparency), (0, 0, 170, transparency)]    # red, green, blue
+    color = all_colors[card.get_values()[2]]
+
     # amount and shape
     if card.get_values()[0] == 0: # 1 element
         if card.get_values()[1] == 0: # rectangle
-            pygame.draw.rect(window, color, (card.x_position+25, card.y_position+70, 60, 20))
+            pygame.draw.rect(surface, color, (card.x_position+21, card.y_position+65, 60, 20), border_width)
         elif card.get_values()[1] == 1: # circle
-            pygame.draw.circle(window, color, (card.x_position+45, card.y_position+75), 20)
+            pygame.draw.circle(surface, color, (card.x_position+50, card.y_position+75), 20, border_width)
         else: # ellipse
-            pygame.draw.ellipse(window, color, (card.x_position+25, card.y_position+70, 60, 20))
+            pygame.draw.ellipse(surface, color, (card.x_position+22, card.y_position+70, 60, 20), border_width)
     elif card.get_values()[0] == 1: # 2 elements
         if card.get_values()[1] == 0: # rectangle
-            pygame.draw.rect(window, color, (card.x_position+25, card.y_position+45, 60, 20))
-            pygame.draw.rect(window, color, (card.x_position+25, card.y_position+95, 60, 20))
-        if card.get_values()[1] == 1: # circle
-            pygame.draw.circle(window, color, (card.x_position+45, card.y_position+50), 20)
-            pygame.draw.circle(window, color, (card.x_position+45, card.y_position+100), 20)
+            pygame.draw.rect(surface, color, (card.x_position+21, card.y_position+45, 60, 20), border_width)
+            pygame.draw.rect(surface, color, (card.x_position+21, card.y_position+90, 60, 20), border_width)
+        elif card.get_values()[1] == 1: # circle
+            pygame.draw.circle(surface, color, (card.x_position+50, card.y_position+50), 20, border_width)
+            pygame.draw.circle(surface, color, (card.x_position+50, card.y_position+100), 20, border_width)
         else: # ellipse
-            pygame.draw.ellipse(window, color, (card.x_position+25, card.y_position+45, 60, 20))
-            pygame.draw.ellipse(window, color, (card.x_position+25, card.y_position+95, 60, 20))
+            pygame.draw.ellipse(surface, color, (card.x_position+22, card.y_position+45, 60, 20), border_width)
+            pygame.draw.ellipse(surface, color, (card.x_position+22, card.y_position+90, 60, 20), border_width)
     elif card.get_values()[0] == 2: # 3 elements
         if card.get_values()[1] == 0: # rectangle
-            pygame.draw.rect(window, color, (card.x_position+25, card.y_position+40, 60, 20))
-            pygame.draw.rect(window, color, (card.x_position+25, card.y_position+70, 60, 20))
-            pygame.draw.rect(window, color, (card.x_position+25, card.y_position+100, 60, 20))
-        if card.get_values()[1] == 1: # circle
-            pygame.draw.circle(window, color, (card.x_position+45, card.y_position+40), 16)
-            pygame.draw.circle(window, color, (card.x_position+45, card.y_position+75), 16)
-            pygame.draw.circle(window, color, (card.x_position+45, card.y_position+110), 16)
+            pygame.draw.rect(surface, color, (card.x_position+21, card.y_position+35, 60, 20), border_width)
+            pygame.draw.rect(surface, color, (card.x_position+21, card.y_position+65, 60, 20), border_width)
+            pygame.draw.rect(surface, color, (card.x_position+21, card.y_position+95, 60, 20), border_width)
+        elif card.get_values()[1] == 1: # circle
+            pygame.draw.circle(surface, color, (card.x_position+50, card.y_position+40), 16, border_width)
+            pygame.draw.circle(surface, color, (card.x_position+50, card.y_position+75), 16, border_width)
+            pygame.draw.circle(surface, color, (card.x_position+50, card.y_position+110), 16, border_width)
         else: # ellipse
-            pygame.draw.ellipse(window, color, (card.x_position+25, card.y_position+40, 60, 20))
-            pygame.draw.ellipse(window, color, (card.x_position+25, card.y_position+70, 60, 20))
-            pygame.draw.ellipse(window, color, (card.x_position+25, card.y_position+100, 60, 20))
+            pygame.draw.ellipse(surface, color, (card.x_position+22, card.y_position+40, 60, 20), border_width)
+            pygame.draw.ellipse(surface, color, (card.x_position+22, card.y_position+70, 60, 20), border_width)
+            pygame.draw.ellipse(surface, color, (card.x_position+22, card.y_position+100, 60, 20), border_width)
+    window.blit(surface, (0, 0))
 
 
 
-# test
+# main 
 game = Game()
 
